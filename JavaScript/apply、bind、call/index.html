@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <title>JS经典问题：this、apply、bind、call | xluoyu的个人博客|(。・∀・)ノ</title>
+  <meta name="google-site-verification" content="L8MmAGGFf4d2EHS15pkWw-aHQq2zV2I8CM8b9TUi6Y4">
+  
+  <meta name="keywords" content="前端,vue,JavaScript,js,html5,css3,node,hexo,xluoyu,xluoyu的博客,xiaoluoyu">
+  
+  
+  <meta name="description" content="Xluoyu的个人技术博客，记录在前端领域中走过的点点滴滴，xluoyu的记事簿">
+  
+
+  <link rel="alternate" href="/atom.xml" title="xluoyu的个人博客|(。・∀・)ノ">
+  <meta name="baidu-site-verification" content="ZPfq92tatM">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/image/favicon.ico">
+  <link rel="bookmark" href="/image/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- meta -->
+  
+  <!-- link -->
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.6.3/css/all.min.css">
+
+  
+
+  
+  <link rel="stylesheet" href="/style.css">
+  
+
+  
+
+
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar" class="pure"></div>
+</div>
+
+    <script>setLoadingBarProgress(20)</script>
+    <header class="l_header pure">
+	<div class="wrapper">
+		<div class="nav-main container container--flex">
+      <a class="logo flat-box" href="/">
+        
+          xluoyu的个人博客|(。・∀・)ノ
+        
+      </a>
+			<div class="menu">
+				<ul class="h-list">
+          
+  					
+  						<li>
+								<a id="about" class="nav flat-box" href="/about/">
+									<i class="fas fa-home fa-fw"></i>&nbsp;关于我
+								</a>
+							</li>
+      			
+      		
+				</ul>
+			</div>
+
+			
+				<div class="m_search">
+					<form name="searchform" class="form u-search-form">
+						<input type="text" class="input u-search-input" placeholder="搜索">
+						<span class="icon"><i class="fas fa-search fa-fw"></i></span>
+					</form>
+				</div>
+			
+			<ul class="switcher h-list">
+				
+					<li class="s-search"><a class="fas fa-search fa-fw" href="javascript:void(0)"></a></li>
+				
+				<li class="s-menu"><a class="fas fa-bars fa-fw" href="javascript:void(0)"></a></li>
+			</ul>
+		</div>
+
+		<div class="nav-sub container container--flex">
+			<a class="logo flat-box"></a>
+			<ul class="switcher h-list">
+				<li class="s-comment"><a class="flat-btn fas fa-comments fa-fw" href="javascript:void(0)"></a></li>
+				<li class="s-toc"><a class="flat-btn fas fa-list fa-fw" href="javascript:void(0)"></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+	<aside class="menu-phone">
+    <header>
+		<nav class="menu">
+      <ul>
+          
+              
+                  <li>
+										<a id="about" class="nav flat-box" href="/about/">
+											<i class="fas fa-home fa-fw"></i>&nbsp;关于我
+										</a>
+                  </li>
+              
+       
+      </ul>
+		</nav>
+    </header>
+	</aside>
+
+    <script>setLoadingBarProgress(40);</script>
+    <div class="l_body">
+    <div class='container clearfix'>
+        <div class='l_main'>
+            <article id="post" class="post white-box article-type-post" itemscope="" itemprop="blogPost">
+  
+<section class="meta">
+  
+  <div class="meta" id="header-meta">
+    
+      
+          <h1 class="title">JS经典问题：this、apply、bind、call</h1>
+      
+    
+
+    
+      <time class="metatag time">
+        <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;2019-04-09
+      </time>
+    
+
+    
+      
+    
+    <div class="metatag cats">
+        <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>&nbsp;<a class="categories" href="/categories/JS基础深入/">JS基础深入</a>
+    </div>
+
+
+    
+
+    
+      
+        <div class="metatag browse busuanzi"><i class="fas fa-eye fa-fw" aria-hidden="true"></i>
+          &nbsp;<span id="busuanzi_value_page_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+        </div>
+      
+    
+
+    
+
+  </div>
+</section>
+
+    <section class="article typo">
+      <div class="article-entry" itemprop="articleBody">
+        <p>讨论一下JS中的经典问题<br><a id="more"></a></p>
+<h2 id="this"><a href="#this" class="headerlink" title="this"></a>this</h2><p>关于this的指向一直是面试中的常考问题, 虽然现在随着ES6的普及，使用箭头函数可以轻松的解决this指向，但我们仍需要掌握它。在一些教程中看到了一句话</p>
+<blockquote>
+<p>this 永远指向最后调用它的那个对象</p>
+</blockquote>
+<h2 id="由此我们可以写一些小例子"><a href="#由此我们可以写一些小例子" class="headerlink" title="由此我们可以写一些小例子"></a>由此我们可以写一些小例子</h2><p>1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">var name = &apos;window&apos;</span><br><span class="line"></span><br><span class="line">function foo() &#123;</span><br><span class="line">    console.log(name) // window</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(function (foo) &#123;</span><br><span class="line">    var name = &apos;func&apos;;</span><br><span class="line">    foo()</span><br><span class="line">&#125;)(foo)</span><br></pre></td></tr></table></figure></p>
+<p>最后输出window, 调用自执行函数的是window，所以再次函数中的指向就是window<br>2</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">var name = &apos;window&apos;</span><br><span class="line"></span><br><span class="line">var test = &#123;</span><br><span class="line">    &apos;name&apos;: &apos;test&apos;,</span><br><span class="line">    foo: function() &#123;</span><br><span class="line">        console.log(this.name) // test</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">test.foo()</span><br></pre></td></tr></table></figure>
+<p>调用函数的对象是test，所以this指向test<br>3<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">var name = &apos;window&apos;</span><br><span class="line"></span><br><span class="line">var test = &#123;</span><br><span class="line">    &apos;name&apos;: &apos;test&apos;,</span><br><span class="line">    foo: function() &#123;</span><br><span class="line">        console.log(this.name) // window</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var newFoo = test.foo;</span><br><span class="line">newFoo()</span><br></pre></td></tr></table></figure></p>
+<p>进行一点小改动，将函数foo赋值给newFoo，在window中调用，随后this指向window</p>
+<h2 id="改变this指向"><a href="#改变this指向" class="headerlink" title="改变this指向"></a>改变this指向</h2><p>改变this指向的方法主要有</p>
+<ul>
+<li>函数传参，将外部this传入到函数中</li>
+<li>ES6中的箭头函数，继承this的指向</li>
+<li>使用apply、bind、call</li>
+<li>使用new操作符</li>
+</ul>
+<h2 id="apply、bind、call"><a href="#apply、bind、call" class="headerlink" title="apply、bind、call"></a>apply、bind、call</h2><p>apply<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">var name = &apos;window&apos;</span><br><span class="line"></span><br><span class="line">var a = &#123;</span><br><span class="line">    name : &quot;Cherry&quot;,</span><br><span class="line"></span><br><span class="line">    func1: function () &#123;</span><br><span class="line">        setTimeout(  function () &#123;</span><br><span class="line">            console.log(this.name) // Cherry</span><br><span class="line">        &#125;.apply(a),100);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    func2: function () &#123;</span><br><span class="line">        setTimeout(  function () &#123;</span><br><span class="line">            console.log(this.name) // window</span><br><span class="line">        &#125;.apply(window),100);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">a.func1()</span><br><span class="line">a.func2()</span><br></pre></td></tr></table></figure></p>
+<p>bind<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">var name = &apos;window&apos;</span><br><span class="line"></span><br><span class="line">var a = &#123;</span><br><span class="line">    name : &quot;Cherry&quot;,</span><br><span class="line"></span><br><span class="line">    func1: function () &#123;</span><br><span class="line">        setTimeout(  function () &#123;</span><br><span class="line">            console.log(this.name) // Cherry</span><br><span class="line">        &#125;.bind(a),100);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    func2: function () &#123;</span><br><span class="line">        setTimeout(  function () &#123;</span><br><span class="line">            console.log(this.name) // window</span><br><span class="line">        &#125;.bind(window),100);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">a.func1()</span><br><span class="line">a.func2()</span><br></pre></td></tr></table></figure></p>
+<p>call<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">var name = &apos;window&apos;</span><br><span class="line"></span><br><span class="line">var a = &#123;</span><br><span class="line">    name : &quot;Cherry&quot;,</span><br><span class="line"></span><br><span class="line">    func1: function () &#123;</span><br><span class="line">        setTimeout(  function () &#123;</span><br><span class="line">            console.log(this.name) // Cherry</span><br><span class="line">        &#125;.call(a),100);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    func2: function () &#123;</span><br><span class="line">        setTimeout(  function () &#123;</span><br><span class="line">            console.log(this.name) // window</span><br><span class="line">        &#125;.call(window),100);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">a.func1()</span><br><span class="line">a.func2()</span><br></pre></td></tr></table></figure></p>
+<p>由此可知，当我们对一个函数使用apply、bind、call时都会改变该函数的this指向，那么他们有什么区别呢</p>
+<h2 id="call"><a href="#call" class="headerlink" title="call"></a>call</h2><blockquote>
+<p>call() 方法调用一个函数, 其具有一个指定的this值和分别地提供的参数(参数的列表)。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function Product(name, price) &#123;</span><br><span class="line">  this.name = name;</span><br><span class="line">  this.price = price;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function Food(name, price) &#123;</span><br><span class="line">  Product.call(this, name, price);</span><br><span class="line">  this.category = &apos;food&apos;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(new Food(&apos;cheese&apos;, 5).name);  // cheese</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="apply"><a href="#apply" class="headerlink" title="apply"></a>apply</h2><blockquote>
+<p>apply() 方法调用一个具有给定this值的函数，以及作为一个数组（或类似数组对象）提供的参数。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">var numbers = [5, 6, 2, 3, 7];</span><br><span class="line"></span><br><span class="line">var max = Math.max.apply(null, numbers);</span><br><span class="line"></span><br><span class="line">console.log(max);</span><br><span class="line">// expected output: 7</span><br><span class="line"></span><br><span class="line">var min = Math.min.apply(null, numbers);</span><br><span class="line"></span><br><span class="line">console.log(min);</span><br><span class="line">// expected output: 2</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>call()方法的作用和 apply() 方法类似，区别就是call()方法接受的是参数列表，而apply()方法接受的是一个参数数组。</p>
+</blockquote>
+<h2 id="bind"><a href="#bind" class="headerlink" title="bind"></a>bind</h2><blockquote>
+<p>bind()方法创建一个新的函数，在调用时设置this关键字为提供的值。并在调用新函数时，将给定参数列表作为原函数的参数序列的前若干项。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var module = &#123;</span><br><span class="line">  x: 42,</span><br><span class="line">  getX: function() &#123;</span><br><span class="line">    return this.x;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var unboundGetX = module.getX;</span><br><span class="line">console.log(unboundGetX());</span><br><span class="line">// expected output: undefined</span><br><span class="line"></span><br><span class="line">var boundGetX = unboundGetX.bind(module);</span><br><span class="line">console.log(boundGetX());</span><br><span class="line">// expected output: 42</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="apply、bind、call-总结"><a href="#apply、bind、call-总结" class="headerlink" title="apply、bind、call 总结"></a>apply、bind、call 总结</h2><p>相同之处:</p>
+<ul>
+<li>改变函数体内 this 的指向</li>
+</ul>
+<p>不同之处: </p>
+<ul>
+<li>call、apply的区别：接受参数的方式不一样。</li>
+<li>bind：不立即执行。而apply、call 立即执行。</li>
+</ul>
+
+      </div>
+        
+          <section class="meta" id="footer-meta">
+            
+              <time class="metatag time" itemprop="dateUpdated" datetime="2020-03-09T19:42:44+08:00" content="2020-03-09"><i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>
+                &nbsp;2020-03-09
+              </time>
+            
+            
+                
+                <div class="metatag tags"><a class="tag" href="/tags/JavaScript/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>&nbsp;JavaScript</a></div>
+            
+            
+          </section>
+        
+
+        
+            <div class="prev-next">
+                
+                    <section class="prev">
+                        <span class="art-item-left">
+                            <h6><i class="fas fa-chevron-left" aria-hidden="true"></i>&nbsp;上一页</h6>
+                            <h4>
+                                <a href="/JavaScript/exports/" rel="prev" title="module.exports与exports，export与export default之间的关系和区别">
+                                  
+                                      module.exports与exports，export与export default之间的关系和区别
+                                  
+                                </a>
+                            </h4>
+                            
+                                
+                                <h6 class="tags">
+                                    <a class="tag" href="/tags/小技巧/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>小技巧</a>
+                                </h6>
+                            
+                        </span>
+                    </section>
+                
+                
+                    <section class="next">
+                        <span class="art-item-right" aria-hidden="true">
+                            <h6>下一页&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
+                            <h4>
+                                <a href="/小技巧/a==1&amp;&amp;a==2/" rel="prev" title="a == 1 &amp;&amp; a == 2 &amp;&amp; a == 3">
+                                    
+                                        a == 1 &amp;&amp; a == 2 &amp;&amp; a == 3
+                                    
+                                </a>
+                            </h4>
+                            
+                                
+                                <h6 class="tags">
+                                    <a class="tag" href="/tags/小技巧/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>小技巧</a>
+                                </h6>
+                            
+                        </span>
+                    </section>
+                
+            </div>
+        
+
+    </section>
+
+</article>
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+<br>
+
+<!-- 显示推荐文章和评论 -->
+
+
+
+  <article class="post white-box comments">
+    <section class="article typo">
+
+      
+        
+
+    <div class="recommended_posts">
+        <h4><i class="fas fa-bookmark fa-fw" aria-hidden="true"></i>&nbsp;相关文章</h4>
+        <ul>
+            
+                <li><a href="http://xluoyu.cn/小技巧/初探gulp/">初探gulp</a></li>
+            
+                <li><a href="http://xluoyu.cn/JavaScript/exports/">module.exports与exports，export与export default之间的关系和区别</a></li>
+            
+                <li><a href="http://xluoyu.cn/小技巧/a==1&amp;&amp;a==2/">a == 1 &amp;&amp; a == 2 &amp;&amp; a == 3</a></li>
+            
+                <li><a href="http://xluoyu.cn/小技巧/JS常用函数/">一些常用函数</a></li>
+            
+        </ul>
+    </div>
+
+
+      
+
+      
+        <h4><i class="fas fa-comments fa-fw" aria-hidden="true"></i>&nbsp;评论</h4>
+        
+        
+        
+          
+            <section id="comments">
+              <div id="valine_container" class="valine_thread">
+                <i class="fas fa-spinner fa-spin fa-fw"></i>
+              </div>
+            </section>
+          
+        
+      
+    </section>
+  </article>
+
+
+
+<script>
+    window.subData = {
+        title: 'JS经典问题：this、apply、bind、call',
+        tools: true
+    }
+</script>
+
+
+        </div>
+        <aside class='l_side'>
+            
+  
+  
+    
+      
+      
+        <section class="author">
+  <div class="content pure">
+    
+      <div class="avatar">
+        <img class="avatar" src="/image/photo.jpg">
+      </div>
+    
+    
+      <div class="text">
+        
+        
+        
+          <p><span id="jinrishici-sentence">柳暗花明又一村</span></p>
+          <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+        
+      </div>
+    
+    
+      <div class="social-wrapper">
+        
+          
+            <a href="mailto:llzz0895@163.com" class="social flat-btn" target="_blank" rel="external"><i class="social fas fa-envelope" aria-hidden="true"></i></a>
+          
+        
+          
+            <a href="https://github.com/xluoyu12138" class="social flat-btn" target="_blank" rel="external"><i class="social fab fa-github" aria-hidden="true"></i></a>
+          
+        
+          
+            <a href="https://juejin.im/user/5b710251f265da27fa04f363" class="social flat-btn" target="_blank" rel="external"><i class="social fas fa-music" aria-hidden="true"></i></a>
+          
+        
+      </div>
+    
+  </div>
+</section>
+
+      
+    
+  
+    
+      
+      
+        
+
+      
+    
+  
+    
+      
+      
+        
+  <section class="category">
+    
+<header class="pure">
+  <div><i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;所有分类</div>
+  
+</header>
+
+    <div class="content pure">
+      <ul class="entry">
+        
+          <li><a class="flat-box" title="/categories/JS基础深入/" href="/categories/JS基础深入/"><div class="name">JS基础深入</div><div class="badge">(5)</div></a></li>
+        
+          <li><a class="flat-box" title="/categories/Vue/" href="/categories/Vue/"><div class="name">Vue</div><div class="badge">(0)</div></a></li>
+        
+          <li><a class="flat-box" title="/categories/小技巧/" href="/categories/小技巧/"><div class="name">小技巧</div><div class="badge">(6)</div></a></li>
+        
+          <li><a class="flat-box" title="/categories/日常笔记/" href="/categories/日常笔记/"><div class="name">日常笔记</div><div class="badge">(6)</div></a></li>
+        
+      </ul>
+    </div>
+  </section>
+
+
+      
+    
+  
+    
+      
+      
+        
+  <section class="tagcloud">
+    
+<header class="pure">
+  <div><i class="fas fa-fire fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;热门标签</div>
+  
+</header>
+
+    <div class="content pure">
+      <a href="/tags/JavaScript/" style="font-size: 24px; color: #555">JavaScript</a> <a href="/tags/gulp/" style="font-size: 14px; color: #999">gulp</a> <a href="/tags/html/" style="font-size: 14px; color: #999">html</a> <a href="/tags/node-js/" style="font-size: 14px; color: #999">node.js</a> <a href="/tags/vue/" style="font-size: 14px; color: #999">vue</a> <a href="/tags/前端/" style="font-size: 14px; color: #999">前端</a> <a href="/tags/小技巧/" style="font-size: 24px; color: #555">小技巧</a> <a href="/tags/建站/" style="font-size: 14px; color: #999">建站</a> <a href="/tags/性能优化/" style="font-size: 14px; color: #999">性能优化</a> <a href="/tags/面试/" style="font-size: 19px; color: #777">面试</a>
+    </div>
+  </section>
+
+
+      
+    
+  
+    
+      
+      
+        
+
+
+  <section class="music">
+    
+<header class="pure">
+  <div><i class="fas fa-compact-disc fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;最近在听</div>
+  
+</header>
+
+    <div class="content pure">
+      
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.7.0/dist/APlayer.min.css">
+  <div class="aplayer" data-theme="#1BCDFC" data-mode="circulation" data-server="netease" data-type="playlist" data-id="811348740" data-volume="0.7">
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/aplayer@1.7.0/dist/APlayer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/meting@1.1.0/dist/Meting.min.js"></script>
+
+
+    </div>
+  </section>
+
+
+      
+    
+  
+    
+      
+      
+        <section class="list">
+  
+<header class="pure">
+  <div><i class="fas fa-users fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;友链</div>
+  
+</header>
+
+  <div class="content pure">
+    <ul class="entry">
+      
+        <li><a class="flat-box" title="https://xaoxuu.com" href="https://xaoxuu.com">
+          <div class="name">
+            
+              <img src="https://cdn.jsdelivr.net/gh/xaoxuu/assets@18.12.27/avatar/avatar.png" id="round">
+            
+            &nbsp;&nbsp;xaoxuu's blog
+          </div>
+          
+        </a></li>
+      
+    </ul>
+  </div>
+</section>
+
+      
+    
+  
+
+
+        </aside>
+        <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+    <footer id="footer" class="clearfix">
+  
+    <div class="social-wrapper">
+      
+        
+          <a href="mailto:llzz0895@163.com" class="social fas fa-envelope flat-btn" target="_blank" rel="external"></a>
+        
+      
+        
+          <a href="https://github.com/xluoyu12138" class="social fab fa-github flat-btn" target="_blank" rel="external"></a>
+        
+      
+        
+          <a href="https://juejin.im/user/5b710251f265da27fa04f363" class="social fas fa-music flat-btn" target="_blank" rel="external"></a>
+        
+      
+    </div>
+  
+  <br>
+  <!-- <div><p>博客内容遵循 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div> -->
+  <div>本站使用 <a href="https://xaoxuu.com/wiki/material-x/" target="_blank" class="codename">Material X</a> 作为主题，总访问量为 <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span> 次。
+  </div>
+</footer>
+
+    <script>setLoadingBarProgress(80);</script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+
+  <script>
+    var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+    var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+    var ALGOLIA_API_KEY = "";
+    var ALGOLIA_APP_ID = "";
+    var ALGOLIA_INDEX_NAME = "";
+    var AZURE_SERVICE_NAME = "";
+    var AZURE_INDEX_NAME = "";
+    var AZURE_QUERY_KEY = "";
+    var BAIDU_API_ID = "";
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/"||"/";
+    if(!ROOT.endsWith('/'))ROOT += '/';
+  </script>
+
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/scrollreveal@4.0.5/dist/scrollreveal.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        const $reveal = $('.reveal');
+    		if ($reveal.length === 0) return;
+    		const sr = ScrollReveal({ distance: 0 });
+    		sr.reveal('.reveal');
+      });
+    </script>
+  
+  
+    <script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        Waves.attach('.flat-btn', ['waves-button']);
+        Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+        Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+        Waves.attach('.flat-box', ['waves-block']);
+        Waves.attach('.float-box', ['waves-block', 'waves-float']);
+        Waves.attach('.waves-image');
+        Waves.init();
+      });
+    </script>
+  
+  
+    <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+  
+  
+  
+
+
+  
+  
+  
+    
+      
+      
+      
+        
+          <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+          
+            
+              <script src="https://cdn.jsdelivr.net/gh/xaoxuu/volantis@1/js/volantis.min.js"></script>
+            
+          
+          <script>
+          var GUEST_INFO = ['nick','mail','link'];
+          var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+            return GUEST_INFO.indexOf(item) > -1
+          });
+          var notify = 'false' == true;
+          var verify = 'false' == true;
+          var valine = new Valine();
+          valine.init({
+            el: '#valine_container',
+            notify: notify,
+            verify: verify,
+            guest_info: guest_info,
+            
+            appId: "84evfBYo4ce6a9Kqms8N3Hsi-gzGzoHsz",
+            appKey: "2wR0Qwbq6lYqYzuQFrMfN2jW",
+            placeholder: "快来评论吧~",
+            pageSize:'10',
+            avatar:'mp',
+            lang:'zh-cn',
+            highlight:''
+          })
+          </script>
+        
+      
+    
+  
+  
+    <script src="/js/app.js"></script>
+<script src="/js/search.js"></script>
+  
+
+
+
+
+
+
+    <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

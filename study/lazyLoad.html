@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图片懒加载</title>
+</head>
+<style>
+body,html,ul, li, img{margin: 0;padding: 0}
+li{
+  list-style: none;
+  width: 500px;
+  height: 500px;
+  margin: 50px auto;
+}
+img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+div{
+    width: 100%;
+    height: 100px;
+}
+</style>
+<body>
+  <ul>
+    <li>
+        <img src="/study/./image/loading.gif" data-src="./image/1.jpg" class="lazyload-img">
+    </li>
+    <li>
+        <img src="/study/./image/loading.gif" data-src="./image/2.jpg" class="lazyload-img">
+    </li>
+    <li>
+        <img src="/study/./image/loading.gif" data-src="./image/3.jpg" class="lazyload-img">
+    </li>
+    <li>
+        <img src="/study/./image/loading.gif" data-src="./image/4.jpg" class="lazyload-img">
+    </li>
+    <li>
+        <img src="/study/./image/loading.gif" data-src="./image/5.jpg" class="lazyload-img">
+    </li>
+    <li>
+        <img src="/study/./image/loading.gif" data-src="./image/6.jpg" class="lazyload-img">
+    </li>
+  </ul>
+</body>
+<script>
+function lazyload() {
+  var imgArr = setArr(document.querySelectorAll('.lazyload-img'))
+  var imgLength = imgArr.length
+  var viewHeight = document.body.clientHeight // 窗口可视高度
+  return function() {
+    if (!imgLength) return // imgLength == 0 结束
+    
+    for (var i=0; i< imgLength;) {  // 移除i++
+      var imgTop = imgArr[i].getBoundingClientRect().top  // 元素距离视口顶部高度
+      var imgBottom = imgArr[i].getBoundingClientRect().bottom  // 元素距离视口底部高度
+      // 判断条件: imgTop小于视口高度且大于等于0 或者 imgBottom小于视口高度且大于等于0
+        if (imgTop <= viewHeight && imgTop >= 0 || imgBottom <= viewHeight && imgBottom >=0) {
+          // 将 data-src 的值赋给 src
+          imgArr[i].setAttribute('src', imgArr[i].getAttribute('data-src'))
+          // 图片展示之后在数组中将其移除
+          imgArr.splice(i, 1)
+          imgLength--
+        } else {
+          // 不满足条件
+          i++
+        }
+    }
+  }
+}
+
+let io = new IntersectionObserver(function (e) {
+  e.forEach((item) => {
+    if (item.isIntersecting) {
+      item.target.src = item.target.dataset.src
+      io.unobserve(item.target)
+    }
+  })
+})
+
+let imgArr = document.querySelectorAll('.lazyload-img')
+imgArr.forEach(item => {
+  io.observe(item)
+})
+
+
+/**
+ * 节点列表改为数组
+ * domList -> 节点列表
+ */
+function setArr(domList) {
+    var arr = []
+    for(var i = 0, n; n = domList[i]; ++i) {
+        arr.push(n)
+    }
+    return arr
+}
+
+/**
+ * 节流
+ * func -> 函数
+ * delay -> 时间(毫秒)
+ */
+function throttle(func, delay) {
+  var prev = Date.now()
+  return function () {
+    var content = this
+    var args = arguments
+    var now = Date.now()
+    if (now - prev >= delay) {
+      func.apply(content, args)
+      prev = Date.now()
+    }
+  }
+}
+
+// var loadImg = lazyload()
+// loadImg()
+// window.addEventListener('scroll', throttle(loadImg, 200))
+
+</script>
+</html>

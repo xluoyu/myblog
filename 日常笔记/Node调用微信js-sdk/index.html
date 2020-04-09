@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <title>Node调用微信js-sdk | xluoyu的个人博客|(。・∀・)ノ</title>
+  <meta name="google-site-verification" content="L8MmAGGFf4d2EHS15pkWw-aHQq2zV2I8CM8b9TUi6Y4">
+  
+  <meta name="keywords" content="前端,vue,JavaScript,js,html5,css3,node,hexo,xluoyu,xluoyu的博客,xiaoluoyu">
+  
+  
+  <meta name="description" content="Xluoyu的个人技术博客，记录在前端领域中走过的点点滴滴，xluoyu的记事簿">
+  
+
+  <link rel="alternate" href="/atom.xml" title="xluoyu的个人博客|(。・∀・)ノ">
+  <meta name="baidu-site-verification" content="ZPfq92tatM">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/image/favicon.ico">
+  <link rel="bookmark" href="/image/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- meta -->
+  
+  <!-- link -->
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.6.3/css/all.min.css">
+
+  
+
+  
+  <link rel="stylesheet" href="/style.css">
+  
+
+  
+
+
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar" class="pure"></div>
+</div>
+
+    <script>setLoadingBarProgress(20)</script>
+    <header class="l_header pure">
+	<div class="wrapper">
+		<div class="nav-main container container--flex">
+      <a class="logo flat-box" href="/">
+        
+          xluoyu的个人博客|(。・∀・)ノ
+        
+      </a>
+			<div class="menu">
+				<ul class="h-list">
+          
+  					
+  						<li>
+								<a id="about" class="nav flat-box" href="/about/">
+									<i class="fas fa-home fa-fw"></i>&nbsp;关于我
+								</a>
+							</li>
+      			
+      		
+				</ul>
+			</div>
+
+			
+				<div class="m_search">
+					<form name="searchform" class="form u-search-form">
+						<input type="text" class="input u-search-input" placeholder="搜索">
+						<span class="icon"><i class="fas fa-search fa-fw"></i></span>
+					</form>
+				</div>
+			
+			<ul class="switcher h-list">
+				
+					<li class="s-search"><a class="fas fa-search fa-fw" href="javascript:void(0)"></a></li>
+				
+				<li class="s-menu"><a class="fas fa-bars fa-fw" href="javascript:void(0)"></a></li>
+			</ul>
+		</div>
+
+		<div class="nav-sub container container--flex">
+			<a class="logo flat-box"></a>
+			<ul class="switcher h-list">
+				<li class="s-comment"><a class="flat-btn fas fa-comments fa-fw" href="javascript:void(0)"></a></li>
+				<li class="s-toc"><a class="flat-btn fas fa-list fa-fw" href="javascript:void(0)"></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+	<aside class="menu-phone">
+    <header>
+		<nav class="menu">
+      <ul>
+          
+              
+                  <li>
+										<a id="about" class="nav flat-box" href="/about/">
+											<i class="fas fa-home fa-fw"></i>&nbsp;关于我
+										</a>
+                  </li>
+              
+       
+      </ul>
+		</nav>
+    </header>
+	</aside>
+
+    <script>setLoadingBarProgress(40);</script>
+    <div class="l_body">
+    <div class='container clearfix'>
+        <div class='l_main'>
+            <article id="post" class="post white-box article-type-post" itemscope="" itemprop="blogPost">
+  
+<section class="meta">
+  
+  <div class="meta" id="header-meta">
+    
+      
+          <h1 class="title">Node调用微信js-sdk</h1>
+      
+    
+
+    
+      <time class="metatag time">
+        <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;2019-05-30
+      </time>
+    
+
+    
+      
+    
+    <div class="metatag cats">
+        <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>&nbsp;<a class="categories" href="/categories/日常笔记/">日常笔记</a>
+    </div>
+
+
+    
+
+    
+      
+        <div class="metatag browse busuanzi"><i class="fas fa-eye fa-fw" aria-hidden="true"></i>
+          &nbsp;<span id="busuanzi_value_page_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+        </div>
+      
+    
+
+    
+
+  </div>
+</section>
+
+    <section class="article typo">
+      <div class="article-entry" itemprop="articleBody">
+        <p>使用Node调用微信js-sdk，爬坑笔记<br><a id="more"></a></p>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>使用node做微信后台，制作一个简单的微信转发祈福页面</p>
+<p>效果图：<br><img src="http://cdn.xluoyu.cn/blog_wxCount1.png" width="40%" style="float: left;margin-right: 10px"><br><img src="http://cdn.xluoyu.cn/blog_wxCount2.png" alt="效果" title="效果"></p>
+<p>主要难点：</p>
+<ol>
+<li>页面title的数字计数</li>
+<li>微信Api的调用</li>
+</ol>
+<h2 id="1-用户数量计数"><a href="#1-用户数量计数" class="headerlink" title="1. 用户数量计数"></a>1. 用户数量计数</h2><p>使用数字来记录用户的访问量，对于计数器而言在网上可以找到很多，这里就是用了本博客中使用的 <a href="http://busuanzi.ibruce.info/" target="_blank" rel="noopener">不蒜子</a> 在做ip计数</p>
+<p>页面结构如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html lang=&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">  &lt;meta charset=&quot;UTF-8&quot;&gt;</span><br><span class="line">  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1,user-scalable=no&quot;&gt;</span><br><span class="line">  &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;</span><br><span class="line">  &lt;meta name=&quot;description&quot; content=&quot;转发这位考神，保佑你逢考必过！考神附体！考的全会！蒙的全对！&quot;&gt;</span><br><span class="line">  &lt;title&gt;&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;!-- 引入不蒜子 --&gt;</span><br><span class="line">&lt;script async src=&quot;//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;!-- 引入微信api --&gt;</span><br><span class="line">&lt;script src=&quot;http://res2.wx.qq.com/open/js/jweixin-1.4.0.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;style&gt;</span><br><span class="line">html,body,img,span&#123;</span><br><span class="line">  margin: 0;</span><br><span class="line">  padding: 0;</span><br><span class="line">&#125;</span><br><span class="line">img&#123;</span><br><span class="line">  width: 100%;</span><br><span class="line">  display: block;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/style&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;img src=&quot;./img.png&quot; alt=&quot;&quot;&gt;</span><br><span class="line"></span><br><span class="line">  &lt;!-- 不蒜子 --&gt;</span><br><span class="line">  &lt;span id=&quot;busuanzi_value_site_pv&quot; style=&quot;display: none&quot;&gt;&lt;/span&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;script src=&quot;https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">...</span><br><span class="line">&lt;/script&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>相关JS<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var script = document.querySelectorAll(&apos;script&apos;)[0] // 引用不蒜子的script标签</span><br><span class="line">var count = 0 // 计数储存</span><br><span class="line"></span><br><span class="line">script.onload = setTitle()</span><br><span class="line">function setTitle() &#123;</span><br><span class="line">  var number = document.querySelector(&apos;#busuanzi_value_site_pv&apos;).innerHTML // 获取不蒜子计数</span><br><span class="line">  if (number) &#123;</span><br><span class="line">    document.title = &apos;我是第&apos; + number + &apos;个被考神保佑的幸运儿，逢考必过！&apos; // 修改title</span><br><span class="line">    document.body.appendChild(i);</span><br><span class="line">    count = number</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    setTimeout(setTitle, 50) // 由于需要网络请求，在获取计数之前反复验证数字</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>由于微信浏览器的限制，页面加载完毕之后title无法更改，需要创建一个<code>iframe</code>来处理，代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var i = document.createElement(&apos;iframe&apos;);</span><br><span class="line">    i.src = &apos;https://www.baidu.com/favicon.ico&apos;;</span><br><span class="line">    i.style.display = &apos;none&apos;;</span><br><span class="line">    i.onload = function() &#123;</span><br><span class="line">        setTimeout(function()&#123;</span><br><span class="line">            i.remove(); 移除</span><br><span class="line">        &#125;, 1)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在修改title后插入标签<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if (number) &#123;</span><br><span class="line">    document.title = &apos;我是第&apos; + number + &apos;个被考神保佑的幸运儿，逢考必过！&apos; // 修改title</span><br><span class="line">    document.body.appendChild(i); // 插入iframe</span><br><span class="line">    count = number</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>easy~</p>
+<h2 id="2-使用微信API之前"><a href="#2-使用微信API之前" class="headerlink" title="2. 使用微信API之前"></a>2. 使用微信API之前</h2><p>使用微信API就要涉及到关于微信公众号等一些账号问题，可在<a href="https://mp.weixin.qq.com/" target="_blank" rel="noopener">微信公众平台</a>自行注册。<br>如果仅用于测试，需要注册测试账号<a href="https://mp.weixin.qq.com/debug/cgi-bin/sandboxinfo" target="_blank" rel="noopener">接口测试号申请</a></p>
+<p>有了相关账号之后就可以得到 <strong>appID</strong> 和 <strong>appsecret</strong> 用于认证，调用微信接口时还需要<em>安全域名</em><br><img src="http://cdn.xluoyu.cn/blog_wxCount3.png" alt="效果" title="效果"></p>
+<blockquote>
+<p><strong>坑！</strong> 不需要填写<em>http://</em>或<em>https://</em>，在本地测试也不要使用端口号，仅支持80(http)和443(https)</p>
+</blockquote>
+<p>之后的相关开发就可以根据<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421141115" target="_blank" rel="noopener">官方文档</a>继续进行</p>
+<ol>
+<li>引入js文件：<a href="http://res.wx.qq.com/open/js/jweixin-1.4.0.js" target="_blank" rel="noopener">http://res.wx.qq.com/open/js/jweixin-1.4.0.js</a> ，</li>
+<li>前端调用后端接口，开始进行权限认证</li>
+<li><a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421140183" target="_blank" rel="noopener">获取access_token</a>，并缓存</li>
+<li>根据签名算法，获取签名，并缓存</li>
+<li>后端将接口配置所需的相关信息返回给前端</li>
+<li><p>注入配置信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">wx.config(&#123;</span><br><span class="line">    debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。</span><br><span class="line">    appId: &apos;&apos;, // 必填，公众号的唯一标识</span><br><span class="line">    timestamp: , // 必填，生成签名的时间戳</span><br><span class="line">    nonceStr: &apos;&apos;, // 必填，生成签名的随机串</span><br><span class="line">    signature: &apos;&apos;,// 必填，签名</span><br><span class="line">    jsApiList: [] // 必填，需要使用的JS接口列表</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过ready接口处理成功验证</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wx.ready(function()&#123;</span><br><span class="line">    // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="3-后端开发"><a href="#3-后端开发" class="headerlink" title="3. 后端开发"></a>3. 后端开发</h2><p>这里简单使用的koa2进行开发<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">... //省略</span><br><span class="line">const sha1 = require(&apos;node-sha1&apos;) // sha1加密算法</span><br><span class="line"></span><br><span class="line">// 注册公众平台/测试账号后得到的信息</span><br><span class="line">const AppID = &apos;wx12345647897987&apos;</span><br><span class="line">const APPSECRET = &apos;f0200721fa1324z2123456789&apos;</span><br><span class="line"></span><br><span class="line">// 获取access_token的地址</span><br><span class="line">const accessToken = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=$&#123;AppID&#125;&amp;secret=$&#123;APPSECRET&#125;`</span><br><span class="line"></span><br><span class="line">// 缓存 accessToken 和 ticket</span><br><span class="line">let cache = &#123;</span><br><span class="line">  accessToken: &#123;</span><br><span class="line">    access_token: &apos;&apos;,</span><br><span class="line">    time: &apos;&apos;</span><br><span class="line">  &#125;,</span><br><span class="line">  ticket: &#123;</span><br><span class="line">    ticket: &apos;&apos;,</span><br><span class="line">    time: &apos;&apos;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 缓存时间 2小时</span><br><span class="line">const timeRange = 2 * 60 * 60</span><br><span class="line"></span><br><span class="line">/** </span><br><span class="line"> * 获取权限配置所需信息</span><br><span class="line"> * url =&gt; String  使用接口的页面地址</span><br><span class="line"> */</span><br><span class="line">router.get(&apos;/getData&apos;, async(ctx, next) =&gt; &#123;</span><br><span class="line">  // 获取access_token</span><br><span class="line">  const &#123; access_token &#125; = await getAccessToken().then(res =&gt; res)</span><br><span class="line">  // 获取ticket</span><br><span class="line">  const &#123; ticket &#125; = await getTicket(access_token).then(res =&gt; res)</span><br><span class="line">  // 随机字符串</span><br><span class="line">  const noncestr = Math.random().toString(36).substr(2)</span><br><span class="line">  // 时间戳 精确到秒!</span><br><span class="line">  const timestamp = Math.round(new Date().getTime()/1000).toString()</span><br><span class="line">  // 接口的请求地址，需前端传入</span><br><span class="line">  const url = ctx.query.url</span><br><span class="line">  // 组合成待加密的字符串</span><br><span class="line">  const string = `jsapi_ticket=$&#123;ticket&#125;&amp;noncestr=$&#123;noncestr&#125;&amp;timestamp=$&#123;timestamp&#125;&amp;url=$&#123;url&#125;`</span><br><span class="line">  // 使用 sha1 算法加密</span><br><span class="line">  const signature = sha1(string)</span><br><span class="line">  // 向前端返回所需信息</span><br><span class="line">  ctx.body = &#123;</span><br><span class="line">    status: 200,</span><br><span class="line">    data: &#123;</span><br><span class="line">      appId: AppID,</span><br><span class="line">      timestamp: timestamp, // 时间戳</span><br><span class="line">      noncestr: noncestr, // 随机字符串</span><br><span class="line">      signature: signature // 签名</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>由于每日获取<code>access_token</code> 和 <code>ticket</code> 的次数有限，所以需要做缓存处理，更新时间为2小时</p>
+<p>获取access_token<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">async function getAccessToken() &#123;</span><br><span class="line">  return new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">    // 判断access_token的可用时间，第一次调用函数需要设置时间，未超过两小时则直接返回</span><br><span class="line">    if (!cache.accessToken.time) &#123;</span><br><span class="line">      cache.accessToken.time = Math.round(new Date().getTime()/1000).toString()</span><br><span class="line">    &#125; else if (cache.accessToken.access_token &amp;&amp; Math.round(new Date().getTime()/1000).toString() - cache.accessToken.time &lt; timeRange) &#123;</span><br><span class="line">      resolve(cache.accessToken) // 未超过缓存时间时直接返回值</span><br><span class="line">      return</span><br><span class="line">    &#125;</span><br><span class="line">    // 请求access_token</span><br><span class="line">    https.get(accessToken, (res) =&gt; &#123;</span><br><span class="line">      var ddd = &quot;&quot;;</span><br><span class="line">      res.on(&apos;data&apos;, (d) =&gt; &#123;</span><br><span class="line">          ddd += d;</span><br><span class="line">      &#125;);</span><br><span class="line">      res.on(&apos;end&apos;, () =&gt; &#123;</span><br><span class="line">        var obj = JSON.parse(ddd);</span><br><span class="line">        cache.accessToken.access_token = obj.access_token</span><br><span class="line">        resolve(obj)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>获取ticket<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">async function getTicket(access_token) &#123;</span><br><span class="line">  return new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">    // 缓存原理同上</span><br><span class="line">    if (!cache.ticket.time) &#123;</span><br><span class="line">      cache.ticket.time = Math.round(new Date().getTime()/1000).toString()</span><br><span class="line">    &#125; else if (cache.ticket.ticket &amp;&amp; Math.round(new Date().getTime()/1000).toString() - cache.ticket.time &lt; timeRange) &#123;</span><br><span class="line">      resolve(cache.ticket)</span><br><span class="line">      return</span><br><span class="line">    &#125;</span><br><span class="line">    // 根据传入的access_token，组合请求地址</span><br><span class="line">    const ticketUrl = `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=$&#123;access_token&#125;&amp;type=jsapi`</span><br><span class="line">    // 请求ticket</span><br><span class="line">    https.get(ticketUrl, (res) =&gt; &#123;</span><br><span class="line">      var ddd = &quot;&quot;;</span><br><span class="line">      res.on(&apos;data&apos;, (d) =&gt; &#123;</span><br><span class="line">          ddd += d;</span><br><span class="line">      &#125;);</span><br><span class="line">      res.on(&apos;end&apos;, () =&gt; &#123;</span><br><span class="line">        var obj = JSON.parse(ddd);</span><br><span class="line">        cache.ticket.ticket = obj.ticket</span><br><span class="line">        resolve(obj)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="4-前端开发"><a href="#4-前端开发" class="headerlink" title="4. 前端开发"></a>4. 前端开发</h2><p>调用后端接口获取所需信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 传入当前页面地址</span><br><span class="line">function getData() &#123;</span><br><span class="line">  $.get(&apos;/getData&apos;, &#123;url: location.href.split(&apos;#&apos;)[0]&#125;, function (res) &#123;</span><br><span class="line">    // 成功回调</span><br><span class="line">    // 进行微信权限配置</span><br><span class="line">    wx.config(&#123;</span><br><span class="line">      debug: true,</span><br><span class="line">      appId: res.data.appId,</span><br><span class="line">      timestamp: res.data.timestamp,</span><br><span class="line">      nonceStr: res.data.noncestr,</span><br><span class="line">      signature: res.data.signature,</span><br><span class="line">      jsApiList: [&apos;updateAppMessageShareData&apos;, &apos;updateTimelineShareData&apos;]</span><br><span class="line">    &#125;)</span><br><span class="line">    setWx()</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用微信Api<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">function setWx() &#123;</span><br><span class="line">  wx.ready(function () &#123;</span><br><span class="line">    // 分享给朋友</span><br><span class="line">    wx.updateAppMessageShareData(&#123; </span><br><span class="line">        title: &apos;我是第&apos; + count + &apos;个被考神保佑的幸运儿，逢考必过！&apos;, // 分享标题</span><br><span class="line">        desc: &apos;转发这位考神，保佑你逢考必过！考神附体！考的全会！蒙的全对！&apos;, // 分享描述</span><br><span class="line">        link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致</span><br><span class="line">        imgUrl: &apos;http://file.rabbitpre.com/default.png&apos;, // 分享图标</span><br><span class="line">        success: function () &#123;</span><br><span class="line">          // 设置成功</span><br><span class="line">          console.log(count)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    // 分享到朋友圈</span><br><span class="line">    wx.updateTimelineShareData(&#123; </span><br><span class="line">        title: &apos;我是第&apos; + count + &apos;个被考神保佑的幸运儿，逢考必过！&apos;, // 分享标题</span><br><span class="line">        desc: &apos;转发这位考神，保佑你逢考必过！考神附体！考的全会！蒙的全对！&apos;, // 分享描述</span><br><span class="line">        link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致</span><br><span class="line">        imgUrl: &apos;http://file.rabbitpre.com/default.png&apos;, // 分享图标</span><br><span class="line">        success: function () &#123;</span><br><span class="line">          // 设置成功</span><br><span class="line">          console.log(count)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="5-遇到的坑"><a href="#5-遇到的坑" class="headerlink" title="5. 遇到的坑"></a>5. 遇到的坑</h2><ol>
+<li>签名有误<br>主要原因：时间戳要精确到秒（<strong>不是毫秒！</strong>）</li>
+<li>安全域名<br>主要原因：不需要写 <em>http://</em> 或 <em>https://</em>, 也不要端口！</li>
+<li>微信开发工具的二次请求<br>将请求后端接口的函数在全局调用时会在开发工具中触发两次，但在chrome中不会，BUG原因尚不明确，我将函数的触发位置放在了修改title之后，表现为<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (number) &#123;</span><br><span class="line">  document.title = &apos;我是第&apos; + number + &apos;个被考神保佑的幸运儿，逢考必过！&apos;</span><br><span class="line">  document.body.appendChild(i);</span><br><span class="line">  count = number</span><br><span class="line">  getData()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="6-工具推荐"><a href="#6-工具推荐" class="headerlink" title="6. 工具推荐"></a>6. 工具推荐</h2><p>在公司制作这个小页面还需要涉及到微信Api、和后台交互，略有些繁琐，我们大可使用H5的一些制作工具，这里推荐<a href="https://www.rabbitpre.com/" target="_blank" rel="noopener">兔展平台</a>，其中就有这个用户计数和小卡片分享功能，不需要敲一行代码就可以制作完成，很方便~</p>
+
+      </div>
+        
+          <section class="meta" id="footer-meta">
+            
+              <time class="metatag time" itemprop="dateUpdated" datetime="2020-03-09T19:42:44+08:00" content="2020-03-09"><i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>
+                &nbsp;2020-03-09
+              </time>
+            
+            
+                
+                <div class="metatag tags"><a class="tag" href="/tags/node-js/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>&nbsp;node.js</a></div>
+            
+            
+          </section>
+        
+
+        
+            <div class="prev-next">
+                
+                    <section class="prev">
+                        <span class="art-item-left">
+                            <h6><i class="fas fa-chevron-left" aria-hidden="true"></i>&nbsp;上一页</h6>
+                            <h4>
+                                <a href="/面试题/关于vue的原理/" rel="prev" title="关于vue的原理">
+                                  
+                                      关于vue的原理
+                                  
+                                </a>
+                            </h4>
+                            
+                                
+                                <h6 class="tags">
+                                    <a class="tag" href="/tags/面试/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>面试</a>
+                                </h6>
+                            
+                        </span>
+                    </section>
+                
+                
+                    <section class="next">
+                        <span class="art-item-right" aria-hidden="true">
+                            <h6>下一页&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
+                            <h4>
+                                <a href="/JavaScript/实现极简版Vue/" rel="prev" title="实现极简版Vue(defineProptotype)">
+                                    
+                                        实现极简版Vue(defineProptotype)
+                                    
+                                </a>
+                            </h4>
+                            
+                                
+                                <h6 class="tags">
+                                    <a class="tag" href="/tags/JavaScript/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>JavaScript</a>
+                                </h6>
+                            
+                        </span>
+                    </section>
+                
+            </div>
+        
+
+    </section>
+
+</article>
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+<br>
+
+<!-- 显示推荐文章和评论 -->
+
+
+
+  <article class="post white-box comments">
+    <section class="article typo">
+
+      
+        
+
+    <div class="recommended_posts">
+        <h4><i class="fas fa-bookmark fa-fw" aria-hidden="true"></i>&nbsp;相关文章</h4>
+        <ul>
+            
+                <li><a href="http://xluoyu.cn/面试题/vue基础面试题/">vue的基础面试题</a></li>
+            
+                <li><a href="http://xluoyu.cn/面试题/关于vue的原理/">关于vue的原理</a></li>
+            
+                <li><a href="http://xluoyu.cn/JavaScript/实现极简版Vue/">实现极简版Vue(defineProptotype)</a></li>
+            
+                <li><a href="http://xluoyu.cn/日常笔记/记录webapp项目开发（一）/">记录webapp项目开发（一）</a></li>
+            
+        </ul>
+    </div>
+
+
+      
+
+      
+        <h4><i class="fas fa-comments fa-fw" aria-hidden="true"></i>&nbsp;评论</h4>
+        
+        
+        
+          
+            <section id="comments">
+              <div id="valine_container" class="valine_thread">
+                <i class="fas fa-spinner fa-spin fa-fw"></i>
+              </div>
+            </section>
+          
+        
+      
+    </section>
+  </article>
+
+
+
+<script>
+    window.subData = {
+        title: 'Node调用微信js-sdk',
+        tools: true
+    }
+</script>
+
+
+        </div>
+        <aside class='l_side'>
+            
+  
+  
+    
+      
+      
+        <section class="author">
+  <div class="content pure">
+    
+      <div class="avatar">
+        <img class="avatar" src="/image/photo.jpg">
+      </div>
+    
+    
+      <div class="text">
+        
+        
+        
+          <p><span id="jinrishici-sentence">柳暗花明又一村</span></p>
+          <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+        
+      </div>
+    
+    
+      <div class="social-wrapper">
+        
+          
+            <a href="mailto:llzz0895@163.com" class="social flat-btn" target="_blank" rel="external"><i class="social fas fa-envelope" aria-hidden="true"></i></a>
+          
+        
+          
+            <a href="https://github.com/xluoyu12138" class="social flat-btn" target="_blank" rel="external"><i class="social fab fa-github" aria-hidden="true"></i></a>
+          
+        
+          
+            <a href="https://juejin.im/user/5b710251f265da27fa04f363" class="social flat-btn" target="_blank" rel="external"><i class="social fas fa-music" aria-hidden="true"></i></a>
+          
+        
+      </div>
+    
+  </div>
+</section>
+
+      
+    
+  
+    
+      
+      
+        
+  <section class="toc-wrapper">
+    
+<header class="pure">
+  <div><i class="fas fa-list fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;文章目录</div>
+  
+    <div class="wrapper"><a class="s-toc rightBtn" rel="external nofollow noopener noreferrer" href="javascript:void(0)"><i class="fas fa-thumbtack fa-fw"></i></a></div>
+  
+</header>
+
+    <div class="content pure">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#需求"><span class="toc-text">需求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-用户数量计数"><span class="toc-text">1. 用户数量计数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-使用微信API之前"><span class="toc-text">2. 使用微信API之前</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-后端开发"><span class="toc-text">3. 后端开发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-前端开发"><span class="toc-text">4. 前端开发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-遇到的坑"><span class="toc-text">5. 遇到的坑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-工具推荐"><span class="toc-text">6. 工具推荐</span></a></li></ol>
+    </div>
+  </section>
+
+
+      
+    
+  
+    
+      
+      
+        
+  <section class="category">
+    
+<header class="pure">
+  <div><i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;所有分类</div>
+  
+</header>
+
+    <div class="content pure">
+      <ul class="entry">
+        
+          <li><a class="flat-box" title="/categories/JS基础深入/" href="/categories/JS基础深入/"><div class="name">JS基础深入</div><div class="badge">(5)</div></a></li>
+        
+          <li><a class="flat-box" title="/categories/Vue/" href="/categories/Vue/"><div class="name">Vue</div><div class="badge">(0)</div></a></li>
+        
+          <li><a class="flat-box" title="/categories/小技巧/" href="/categories/小技巧/"><div class="name">小技巧</div><div class="badge">(6)</div></a></li>
+        
+          <li><a class="flat-box" title="/categories/日常笔记/" href="/categories/日常笔记/"><div class="name">日常笔记</div><div class="badge">(6)</div></a></li>
+        
+      </ul>
+    </div>
+  </section>
+
+
+      
+    
+  
+    
+      
+      
+        
+  <section class="tagcloud">
+    
+<header class="pure">
+  <div><i class="fas fa-fire fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;热门标签</div>
+  
+</header>
+
+    <div class="content pure">
+      <a href="/tags/JavaScript/" style="font-size: 24px; color: #555">JavaScript</a> <a href="/tags/gulp/" style="font-size: 14px; color: #999">gulp</a> <a href="/tags/html/" style="font-size: 14px; color: #999">html</a> <a href="/tags/node-js/" style="font-size: 14px; color: #999">node.js</a> <a href="/tags/vue/" style="font-size: 14px; color: #999">vue</a> <a href="/tags/前端/" style="font-size: 14px; color: #999">前端</a> <a href="/tags/小技巧/" style="font-size: 24px; color: #555">小技巧</a> <a href="/tags/建站/" style="font-size: 14px; color: #999">建站</a> <a href="/tags/性能优化/" style="font-size: 14px; color: #999">性能优化</a> <a href="/tags/面试/" style="font-size: 19px; color: #777">面试</a>
+    </div>
+  </section>
+
+
+      
+    
+  
+    
+      
+      
+        
+
+
+  <section class="music">
+    
+<header class="pure">
+  <div><i class="fas fa-compact-disc fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;最近在听</div>
+  
+</header>
+
+    <div class="content pure">
+      
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.7.0/dist/APlayer.min.css">
+  <div class="aplayer" data-theme="#1BCDFC" data-mode="circulation" data-server="netease" data-type="playlist" data-id="811348740" data-volume="0.7">
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/aplayer@1.7.0/dist/APlayer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/meting@1.1.0/dist/Meting.min.js"></script>
+
+
+    </div>
+  </section>
+
+
+      
+    
+  
+    
+      
+      
+        <section class="list">
+  
+<header class="pure">
+  <div><i class="fas fa-users fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;友链</div>
+  
+</header>
+
+  <div class="content pure">
+    <ul class="entry">
+      
+        <li><a class="flat-box" title="https://xaoxuu.com" href="https://xaoxuu.com">
+          <div class="name">
+            
+              <img src="https://cdn.jsdelivr.net/gh/xaoxuu/assets@18.12.27/avatar/avatar.png" id="round">
+            
+            &nbsp;&nbsp;xaoxuu's blog
+          </div>
+          
+        </a></li>
+      
+    </ul>
+  </div>
+</section>
+
+      
+    
+  
+
+
+        </aside>
+        <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+    <footer id="footer" class="clearfix">
+  
+    <div class="social-wrapper">
+      
+        
+          <a href="mailto:llzz0895@163.com" class="social fas fa-envelope flat-btn" target="_blank" rel="external"></a>
+        
+      
+        
+          <a href="https://github.com/xluoyu12138" class="social fab fa-github flat-btn" target="_blank" rel="external"></a>
+        
+      
+        
+          <a href="https://juejin.im/user/5b710251f265da27fa04f363" class="social fas fa-music flat-btn" target="_blank" rel="external"></a>
+        
+      
+    </div>
+  
+  <br>
+  <!-- <div><p>博客内容遵循 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div> -->
+  <div>本站使用 <a href="https://xaoxuu.com/wiki/material-x/" target="_blank" class="codename">Material X</a> 作为主题，总访问量为 <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span> 次。
+  </div>
+</footer>
+
+    <script>setLoadingBarProgress(80);</script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+
+  <script>
+    var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+    var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+    var ALGOLIA_API_KEY = "";
+    var ALGOLIA_APP_ID = "";
+    var ALGOLIA_INDEX_NAME = "";
+    var AZURE_SERVICE_NAME = "";
+    var AZURE_INDEX_NAME = "";
+    var AZURE_QUERY_KEY = "";
+    var BAIDU_API_ID = "";
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/"||"/";
+    if(!ROOT.endsWith('/'))ROOT += '/';
+  </script>
+
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/scrollreveal@4.0.5/dist/scrollreveal.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        const $reveal = $('.reveal');
+    		if ($reveal.length === 0) return;
+    		const sr = ScrollReveal({ distance: 0 });
+    		sr.reveal('.reveal');
+      });
+    </script>
+  
+  
+    <script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        Waves.attach('.flat-btn', ['waves-button']);
+        Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+        Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+        Waves.attach('.flat-box', ['waves-block']);
+        Waves.attach('.float-box', ['waves-block', 'waves-float']);
+        Waves.attach('.waves-image');
+        Waves.init();
+      });
+    </script>
+  
+  
+    <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+  
+  
+  
+
+
+  
+  
+  
+    
+      
+      
+      
+        
+          <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+          
+            
+              <script src="https://cdn.jsdelivr.net/gh/xaoxuu/volantis@1/js/volantis.min.js"></script>
+            
+          
+          <script>
+          var GUEST_INFO = ['nick','mail','link'];
+          var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+            return GUEST_INFO.indexOf(item) > -1
+          });
+          var notify = 'false' == true;
+          var verify = 'false' == true;
+          var valine = new Valine();
+          valine.init({
+            el: '#valine_container',
+            notify: notify,
+            verify: verify,
+            guest_info: guest_info,
+            
+            appId: "84evfBYo4ce6a9Kqms8N3Hsi-gzGzoHsz",
+            appKey: "2wR0Qwbq6lYqYzuQFrMfN2jW",
+            placeholder: "快来评论吧~",
+            pageSize:'10',
+            avatar:'mp',
+            lang:'zh-cn',
+            highlight:''
+          })
+          </script>
+        
+      
+    
+  
+  
+    <script src="/js/app.js"></script>
+<script src="/js/search.js"></script>
+  
+
+
+
+
+
+
+    <script>setLoadingBarProgress(100);</script>
+</body>
+</html>
